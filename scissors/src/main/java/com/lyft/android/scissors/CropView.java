@@ -27,9 +27,11 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -224,6 +226,13 @@ public class CropView extends ImageView {
         final int viewportWidth = touchManager.getViewportWidth();
 
         final Bitmap dst = Bitmap.createBitmap(viewportWidth, viewportHeight, config);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // Fixes black background on transparent PNG pre-lollipop
+            Context context = getContext();
+            int color = ContextCompat.getColor(context, android.R.color.white);
+            dst.eraseColor(color);
+        }
 
         Canvas canvas = new Canvas(dst);
         final int left = (getRight() - viewportWidth) / 2;
